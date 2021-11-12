@@ -105,11 +105,18 @@ class Connect:
                 self.query(self.select(table_selection, fetaures))
                 
             if choice == 5:
-                table_insertion = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
-                property_table = str(input("WHICH FEATURES DO YOU WANT?\n"))
-                values = str(input("WHICH VALUES?\n"))
-                b1.query(b1.insert_table(table_insertion, property_table, values))
-                
+                while True:
+                    ch = int(input("DO YOU WANT TO DO ONLY SELECT[1] OR MULTIPLES[2]?\n"))
+                    if ch == 1:
+                        table_insertion = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
+                        property_table = str(input("WHICH FEATURES DO YOU WANT?\n"))
+                        values = str(input("WHICH VALUES?\n"))
+                        b1.query(b1.insert_table(table_insertion, property_table, values))
+                    if ch == 2:
+                        file = str(input("PASTE THE FILE PATH:\n"))
+                        self.multiple_insertions(file=file)
+                        print("DONE!")
+                        break                
             if choice == 6:
                 table_delete = input("WHICH TABLE DO YOU WANT SELECT?\n")
                 expression = input("PUT YOUR WHERE.. BE CAREFUL!!! \n")
@@ -123,15 +130,22 @@ class Connect:
             row = file.read()
             return row
         
+    def multiple_insertions(self, file):
+        """[HOW TO]
+            FILE FORMAT =  (" ", " ", ...)
+        Args:
+            file ([string]): [absolute path file]
+        """
+        insertion_fornecedor = (self.openFile(file))
+        diff = insertion_fornecedor.split('\n')
+        for i in range(len(diff)):
+            diff_stirng = str(diff[i]).replace('(','').replace(')', '')
+            self.query(self.insert_table("Fornecedor", ('nome_fornecedor, cnpj'), diff_stirng))
         
                         
 if __name__ == '__main__':
-    b1 = Connect("root", '****', "Produtos")
-    # b1.menu()
-    insertion_fornecedor = (b1.openFile("/home/edudev/Documents/pythonSoulCode/insertFornecedor.sql"))
-    diff = insertion_fornecedor.split('\n')
-    for i in range(len(diff)):
-        diff_stirng = str(diff[i]).replace('(','').replace(')', '')
-        b1.query(b1.insert_table("Fornecedor", ('nome_fornecedor, cnpj'), diff_stirng))
+    b1 = Connect("root", 'Udvf100%', "Produtos")
+    b1.menu()
+    
                 
     # b1.query(b1.select('Fornecedor', '*'))

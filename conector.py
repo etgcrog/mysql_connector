@@ -1,7 +1,17 @@
 import mysql.connector
+import time
+import os
 
 class Connect:
-    def __init__(self, user, password, host, database):
+    def __init__(self, user, password, database, host="127.0.0.1"):
+        """[summary]
+
+        Args:
+            user ([str]): [User to connect in database]
+            password ([str]): [Password to connect in database]
+            database ([str]): [DataBase's name]
+            host ([str]): [ip to connect in database, default = localhost]
+        """
         self.user = user
         self.password = password
         self.host = host
@@ -41,14 +51,20 @@ class Connect:
     def describe_table(self, table):
         return f"DESCRIBE {table}" 
     
-    def insert_table(self, table, features, *args, **kwargs):
-        return(f"INSERT INTO {table}({features}) VALUES {args}")    
+    def insert_table(self, table, features, value):
+        print(f"INSERT INTO {table}({features}) VALUES ({value})")
+        return(f"INSERT INTO {table}({features}) VALUES ({value})")    
         
     def select(self, table, features):
         return f"SELECT {features} FROM {table}"
     
+    def delete(self, table, expression):
+        return f"DELETE FROM {table} WHERE {expression}"
+    
     def menu(self):
         while True:
+            time.sleep(1)
+
             print(f"""
               
         -----------------------------------DATABASE AUTOMATION--------------------------------------------
@@ -58,6 +74,7 @@ class Connect:
         [3] DESCRIBE TABLES
         [4] SELECT 
         [5] INSERT
+        [6] DELETE
         [9] SAIR
         """)
             print(f"YOU ARE ON '{self}'")
@@ -77,20 +94,44 @@ class Connect:
             if choice == 2:
                 self.query(self.show_tables())
             if choice == 3:
-                table_describe = str(input("WHAT TABLE DO YOU WANT DESCRIBE?"))
+                table_describe = str(input("WHICH TABLE DO YOU WANT DESCRIBE?"))
                 self.query(self.describe_table(table_describe))
             if choice == 4:
                 """"
                 features are separated by commas or *
                 """
-                table_selection = str(input("WHAT TABLE SELECT?\n"))
+                table_selection = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
                 fetaures = str(input("WHAT FEATURES?\n"))
                 self.query(self.select(table_selection, fetaures))
-
-
-                    
+                
+            if choice == 5:
+                table_insertion = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
+                property_table = str(input("WHICH FEATURES DO YOU WANT?\n"))
+                values = str(input("WHICH VALUES?\n"))
+                b1.query(b1.insert_table(table_insertion, property_table, values))
+                
+            if choice == 6:
+                table_delete = input("WHICH TABLE DO YOU WANT SELECT?\n")
+                expression = input("PUT YOUR WHERE.. BE CAREFUL!!! \n")
+                self.query(self.delete(table_delete, expression))
+                
+            if choice == 9:
+                break
+            
+    def openFile(self,file):
+        with open(file, 'r') as file:
+            row = file.read()
+            return row
+        
+        
+                        
 if __name__ == '__main__':
-    b1 = Connect("root", "********", "127.0.0.1", "universidade")
-    b1.menu()
-    # b1.query(b1.insert_table("Aluno", ('nome_aluno, end_aluno, cidade_aluno, telefone_aluno'), "Maria", "Csa 3", "Vitoria", "982611454"))
-    
+    b1 = Connect("root", 'Udvf100%', "Produtos")
+    # b1.menu()
+    insertion_fornecedor = (b1.openFile("/home/edudev/Documents/pythonSoulCode/insertFornecedor.sql"))
+    diff = insertion_fornecedor.split('\n')
+    for i in range(len(diff)):
+        diff_stirng = str(diff[i]).replace('(','').replace(')', '')
+        b1.query(b1.insert_table("Fornecedor", ('nome_fornecedor, cnpj'), diff_stirng))
+                
+    # b1.query(b1.select('Fornecedor', '*'))

@@ -3,7 +3,7 @@ import time
 import os
 
 class Connect:
-    def __init__(self, user, password, database, host="127.0.0.1"):
+    def __init__(self, password, user='root', database='sys', host="127.0.0.1"):
         """[summary]
 
         Args:
@@ -25,6 +25,7 @@ class Connect:
     
     def set_database(self, database):
         self.database = database
+        
     
     def query(self, query):
         try:
@@ -47,19 +48,44 @@ class Connect:
     def show_tables(self):
         print("<<<<<<<<<<<<<<<<<<<<< TABLES >>>>>>>>>>>>>>>>>>>>>.")
         return f"SHOW TABLES"
+    
+    def createDataBase(self, file):
+        with open(file, 'r') as database:
+            row = database.read()
+            return row
         
     def describe_table(self, table):
         return f"DESCRIBE {table}" 
     
     def insert_table(self, table, features, value):
-        print(f"INSERT INTO {table}({features}) VALUES ({value})")
-        return(f"INSERT INTO {table}({features}) VALUES ({value})")    
+        print(f"INSERT INTO {table}{features} VALUES ({value})")
+        return(f"INSERT INTO {table}{features} VALUES ({value})")    
         
     def select(self, table, features):
         return f"SELECT {features} FROM {table}"
     
     def delete(self, table, expression):
         return f"DELETE FROM {table} WHERE {expression}"
+    
+    def openFile(self,file):
+        with open(file, 'r') as file:
+            row = file.read()
+            return row
+    
+    def multiple_insertions(self, file, table, fields):
+        """[MULTIPLES INSERTIONS WITH FILE PATH]
+
+        Args:
+            file ([str]]): [absolute file path]
+            table ([str]): [table name]
+            fields ([str]): [fields -> ex: nome_fornecedor, cnpj]
+        """
+    
+        insertion_fornecedor = (self.openFile(file))
+        diff = insertion_fornecedor.split('\n')
+        for i in range(len(diff)):
+            diff_stirng = str(diff[i]).replace('(','').replace(')', '')
+            self.query(self.insert_table(f"{table}", f'({fields})', diff_stirng))
     
     def menu(self):
         while True:
@@ -75,7 +101,7 @@ class Connect:
         [4] SELECT 
         [5] INSERT
         [6] DELETE
-        [9] SAIR
+        [7] CREATE
         """)
             print(f"YOU ARE ON '{self}'")
             choice = int(input("WHAT IS YOUR CHOICE:"))
@@ -101,8 +127,8 @@ class Connect:
                 features are separated by commas or *
                 """
                 table_selection = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
-                fetaures = str(input("WHAT FEATURES?\n"))
-                self.query(self.select(table_selection, fetaures))
+                expression = str(input("TYPE THE EXPRESSION?\n"))
+                self.query(self.select(table_selection, expression))
                 
             if choice == 5:
                 while True:
@@ -114,7 +140,9 @@ class Connect:
                         b1.query(b1.insert_table(table_insertion, property_table, values))
                     if ch == 2:
                         file = str(input("PASTE THE FILE PATH:\n"))
-                        self.multiple_insertions(file=file)
+                        table_multiple = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
+                        fields = str(input("WHICH FIELDS DO YOU WANT?\n"))
+                        self.multiple_insertions(file=file, table=table_multiple, fields = fields)
                         print("DONE!")
                         break                
             if choice == 6:
@@ -122,29 +150,17 @@ class Connect:
                 expression = input("PUT YOUR WHERE.. BE CAREFUL!!! \n")
                 self.query(self.delete(table_delete, expression))
                 
+            if choice == 7:
+                file = str(input("PASTE THE FILE PATH:\n"))
+                self.query(self.createDataBase(file))
+                
             if choice == 9:
                 break
-            
-    def openFile(self,file):
-        with open(file, 'r') as file:
-            row = file.read()
-            return row
-        
-    def multiple_insertions(self, file):
-        """[HOW TO]
-            FILE FORMAT =  (" ", " ", ...)
-        Args:
-            file ([string]): [absolute path file]
-        """
-        insertion_fornecedor = (self.openFile(file))
-        diff = insertion_fornecedor.split('\n')
-        for i in range(len(diff)):
-            diff_stirng = str(diff[i]).replace('(','').replace(')', '')
-            self.query(self.insert_table("Fornecedor", ('nome_fornecedor, cnpj'), diff_stirng))
         
                         
 if __name__ == '__main__':
-    b1 = Connect("root", 'Udvf100%', "Produtos")
+    passwd = input("PASSWORD:\n")
+    b1 = Connect(passwd, database="Produtos")
     b1.menu()
     
                 

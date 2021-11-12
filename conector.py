@@ -126,7 +126,7 @@ class Connect:
         
                         
 if __name__ == '__main__':
-    b1 = Connect("root", 'Udvf100%', "Produtos")
+    b1 = Connect("root", '****', "Produtos")
     # b1.menu()
     insertion_fornecedor = (b1.openFile("/home/edudev/Documents/pythonSoulCode/insertFornecedor.sql"))
     diff = insertion_fornecedor.split('\n')

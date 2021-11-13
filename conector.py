@@ -49,10 +49,20 @@ class Connect:
         print("<<<<<<<<<<<<<<<<<<<<< TABLES >>>>>>>>>>>>>>>>>>>>>.")
         return f"SHOW TABLES"
     
-    def createDataBase(self, file):
-        with open(file, 'r') as database:
-            row = database.read()
-            return row
+    
+    def createDataBase(self, database):
+        return f"CREATE DATABASE {database}"
+    
+    def createTable(self, table_name, args):
+        print(f"CREATE TABLE {table_name} ({args})")
+        return f"CREATE TABLE {table_name} ({args})"
+    
+    def dropTable(self, table_name, expression=None):
+        return f"DROP TABLE {table_name}"
+    # def createDataBase(self, file):
+    #     with open(file, 'r') as database:
+    #         row = database.read()
+    #         return row
         
     def describe_table(self, table):
         return f"DESCRIBE {table}" 
@@ -61,10 +71,15 @@ class Connect:
         print(f"INSERT INTO {table}{features} VALUES ({value})")
         return(f"INSERT INTO {table}{features} VALUES ({value})")    
         
-    def select(self, table, features):
-        return f"SELECT {features} FROM {table}"
+    def select(self, table, features, sub_selection=None, where=None):
+        if where:
+            return f"SELECT {features} FROM {table} WHERE {where}"
+        else:
+            return f"SELECT {features} FROM {table}"
+    
     
     def delete(self, table, expression):
+        print('DELETE FROM {table} WHERE {expression}')
         return f"DELETE FROM {table} WHERE {expression}"
     
     def openFile(self,file):
@@ -102,6 +117,7 @@ class Connect:
         [5] INSERT
         [6] DELETE
         [7] CREATE
+        [8] DROP TABLE
         """)
             print(f"YOU ARE ON '{self}'")
             choice = int(input("WHAT IS YOUR CHOICE:"))
@@ -123,44 +139,78 @@ class Connect:
                 table_describe = str(input("WHICH TABLE DO YOU WANT DESCRIBE?"))
                 self.query(self.describe_table(table_describe))
             if choice == 4:
-                """"
-                features are separated by commas or *
-                """
-                table_selection = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
-                expression = str(input("TYPE THE EXPRESSION?\n"))
-                self.query(self.select(table_selection, expression))
+                try:
+                    """"
+                    features are separated by commas or *
+                    """
+                    table_selection = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
+                    expression = str(input("TYPE THE EXPRESSION?\n"))
+                    have_where = str(input("YOUR SELECT HAVE THE WHERE?[Y/N]\n"))
+                    if have_where in 'Yy':
+                        where = str(input("TYPE THE WHERE?\n"))
+                        self.query(self.select(table_selection, expression, where=where))
+                    else:
+                        self.query(self.select(table_selection, expression))
+                except Exception as erro:
+                    print(erro)
                 
             if choice == 5:
-                while True:
-                    ch = int(input("DO YOU WANT TO DO ONLY SELECT[1] OR MULTIPLES[2]?\n"))
-                    if ch == 1:
-                        table_insertion = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
-                        property_table = str(input("WHICH FEATURES DO YOU WANT?\n"))
-                        values = str(input("WHICH VALUES?\n"))
-                        b1.query(b1.insert_table(table_insertion, property_table, values))
-                    if ch == 2:
-                        file = str(input("PASTE THE FILE PATH:\n"))
-                        table_multiple = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
-                        fields = str(input("WHICH FIELDS DO YOU WANT?\n"))
-                        self.multiple_insertions(file=file, table=table_multiple, fields = fields)
-                        print("DONE!")
-                        break                
+                try:
+                    while True:
+                        ch = int(input("DO YOU WANT TO DO ONLY SELECT[1] OR MULTIPLES[2]?\n"))
+                        if ch == 1:
+                            table_insertion = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
+                            property_table = str(input("WHICH FEATURES DO YOU WANT?\n"))
+                            values = str(input("WHICH VALUES?\n"))
+                            b1.query(b1.insert_table(table_insertion, property_table, values))
+                        if ch == 2:
+                            file = str(input("PASTE THE FILE PATH:\n"))
+                            table_multiple = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
+                            fields = str(input("WHICH FIELDS DO YOU WANT?\n"))
+                            self.multiple_insertions(file=file, table=table_multiple, fields = fields)
+                            print("DONE!")
+                            break
+                except Exception as erro:
+                    print(erro)
             if choice == 6:
-                table_delete = input("WHICH TABLE DO YOU WANT SELECT?\n")
-                expression = input("PUT YOUR WHERE.. BE CAREFUL!!! \n")
-                self.query(self.delete(table_delete, expression))
-                
+                try:
+                    table_delete = input("WHICH TABLE DO YOU WANT SELECT?\n")
+                    expression = input("PUT YOUR WHERE.. BE CAREFUL!!! \n")
+                    self.query(self.delete(table_delete, expression))
+                except Exception as erro:
+                    print(erro)
             if choice == 7:
-                file = str(input("PASTE THE FILE PATH:\n"))
-                self.query(self.createDataBase(file))
+                try:
+                    duo_create = int(input("DO YOU CREATE TABLE[1] OR DATABASE[2]?\n"))
+                    if duo_create == 1:
+                        table_name = str(input("WHICH THE TABLE NAME?\n"))
+                        print("USE -> [TUPLE NAME] [INT/VARCHAR/...] [NOT NULL, PRIMARY KEY] , ...")
+                        features_table = str(input("WHICH THE FEATURES?\n"))
+                        self.query(self.createTable(table_name, features_table))
+                except Exception as erro:
+                    print(erro)
+                if duo_create == 2:
+                    try:
+                        database_name = str(input("WHICH THE DATABASE NAME?\n"))
+                        self.query(self.createDataBase(database_name))
+                    except Exception as erro:
+                        print(erro)
+            if choice == 8:
+                try:
+                    table_drop_name = str(input("WHICH THE TABLE NAME?\n"))
+                    self.query(self.dropTable(table_drop_name))
+                    print(f"TABLE {table_drop_name} DROPPED")
+                except Exception as erro:
+                    print(erro)
+                    
                 
             if choice == 9:
                 break
         
                         
 if __name__ == '__main__':
-    passwd = input("PASSWORD:\n")
-    b1 = Connect(passwd, database="Produtos")
+    # passwd = input("PASSWORD:\n")
+    b1 = Connect("Udvf100%", database="Produtos")
     b1.menu()
     
                 

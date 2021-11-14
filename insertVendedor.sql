@@ -998,4 +998,4 @@
  ('Kit Schechter', '3571457506810048', '468 Daystar Plaza', '3942305623')
  ('Nanni Ferdinand', '3583483501979410', '3 Charing Cross Avenue', '5766157609')
  ('Birch Jandl', '3551411256956471', '83159 Hanson Place', '1464866173')
- ('Verile Hurring', '3528523177053269', '4966 Dahle Way', '8441707584');
+ ('Verile Hurring', '3528523177053269', '4966 Dahle Way', '8441707584')

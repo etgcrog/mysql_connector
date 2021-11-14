@@ -170,7 +170,7 @@ class Connect:
                                 table_insertion = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
                                 property_table = str(input("WHICH FEATURES DO YOU WANT?\n"))
                                 values = str(input("WHICH VALUES?\n"))
-                                b1.query(b1.insert_table(table_insertion, property_table, values))
+                                self.query(self.insert_table(table_insertion, property_table, values))
                                 one_more = str(input("DO YOU WANNA TO DO ONE MORE INSERT? [Y/N]\n"))
                                 if one_more in 'Yy': continue
                                 elif one_more in 'Nn': break
@@ -202,8 +202,22 @@ class Connect:
                         print(erro)
                     if duo_create == 2:
                         try:
-                            database_name = str(input("WHICH THE DATABASE NAME?\n"))
-                            self.query(self.createDataBase(database_name))
+                            already = str(input("DO YOU HAVE ALREADY DATABASE? [Y/N]\n"))
+                            if already in 'Yy':
+                                name_base = str(input("WHTA WILL BE THE DATABASE NAME?\n"))
+                                self.database = f'{name_base}'
+                                n_table_name = 0
+                                with open('create_database.sql', 'r') as file:
+                                    row = file.read()
+                                    length = len(row.split('\n'))
+                                    for i in range(0, length):
+                                        table_name = (row.split('\n')[n_table_name].split(' -')[0])
+                                        self.query(self.createTable(table_name, row.split('\n')[i].split(' -')[1]))
+                                        n_table_name += 1
+                            if already in 'Nn':    
+                                database_name = str(input("WHICH THE DATABASE NAME?\n"))
+                                self.query(self.createDataBase(database_name))
+                                print(f"DATABASE CREATED")
                         except Exception as erro:
                             print(erro)
                 if choose == 8:
@@ -222,11 +236,8 @@ class Connect:
             except ValueError:
                 print("BYE!")
                 break
-                                           
+            
 if __name__ == '__main__':
     # passwd = input("PASSWORD:\n")
-    b1 = Connect("Udvf100%", database='Produtos')
-    b1.menu()
-    
-                
-    # b1.query(b1.select('Fornecedor', '*'))
+    b1 = Connect("Udvf100%")
+    b1.menu()                                        

@@ -1999,4 +1999,4 @@
 (6, 'EyS Eye Wash', '6.65', 997)
 (5, 'Atovaquone', '3.67', 998)
 (4, 'NRV-Systemic', '4.62', 999)
-(3, 'Methylphenidate Hydrochloride', '7.65', 1000);
+(3, 'Methylphenidate Hydrochloride', '7.65', 1000)

@@ -1,5 +1,6 @@
 import mysql.connector
 import time
+from numpy import random
 
 
 class Connect:
@@ -107,6 +108,12 @@ class Connect:
         for i in range(len(diff)):
             diff_stirng = str(diff[i]).replace('(','').replace(')', '')
             self.query(self.insert_table(f"{table}", f'({fields})', diff_stirng))
+            
+    def generate_vendas(self, destination_file):
+        x = random.randint(1000, size=(1000,4))
+        with open(destination_file, 'w') as file:
+            for i in x:
+                file.write(str(f"{i}\n").replace('[', '(').replace(']', ')').replace(' ', ',').replace(',,', ','.replace('(,', '(')))
     
     def menu(self):
         while True:
@@ -124,6 +131,7 @@ class Connect:
         [6] DELETE
         [7] CREATE
         [8] DROP
+        [9] VENDAS GENERATOR
         [PRESS ANY KEY FOR FOR QUIT...]
         """)
             print(f"YOU ARE ON '{self}'")
@@ -234,11 +242,14 @@ class Connect:
                             print(f"DATABASE {data_drop_name} DROPPED")
                     except Exception as erro:
                         print(erro)
+                if choose == 9:
+                    (self.generate_vendas("vendas.sql"))
+                    print("Archive Created")
             except ValueError:
                 print("BYE!")
                 break
             
 if __name__ == '__main__':
     # passwd = input("PASSWORD:\n")
-    b1 = Connect("Udvf100%", database="Produtos")
+    b1 = Connect("Udvf100%")
     b1.menu()                                        

@@ -2,7 +2,6 @@ import mysql.connector
 import time
 from numpy import random
 
-
 class Connect:
     def __init__(self, password, user='root', database='sys', host="127.0.0.1"):
         """[summary]
@@ -77,8 +76,14 @@ class Connect:
         print(f"INSERT INTO {table}{features} VALUES ({value})") #REPARAR
         return(f"INSERT INTO {table}{features} VALUES ({value})")    
     
-    def select(self, table, features, sub_selection=None, where=None):
-        if where:
+    def select(self, table, features, join=None, where=None, table_inner=None, on=None, order=None):
+        if join in ["JOIN", "INNER JOIN", "RIGHT JOIN"]:
+            print('-'*40)
+            return f"SELECT {features} FROM {table} {join} {table_inner} ON {on}"
+        elif order and join:
+            print('-'*40)
+            return f"SELECT {features} FROM {table} {join} {table_inner} ON {on} ORDER BY {order}"
+        elif where:
             print('-'*40)
             return f"SELECT {features} FROM {table} WHERE {where}"
         else:
@@ -161,11 +166,24 @@ class Connect:
                         table_selection = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
                         expression = str(input("TYPE THE EXPRESSION?\n"))
                         have_where = str(input("YOUR SELECT HAVE THE WHERE?[Y/N]\n"))
+                        have_join = str(input("YOUR SELECT HAVE THE JOIN?[Y/N]\n"))
                         if have_where in 'Yy':
                             where = str(input("TYPE THE WHERE?\n"))
                             self.query(self.select(table_selection, expression, where=where))
                             print('-'*40)
                         if have_where in 'Nn':
+                            if have_join in 'Yy':
+                                join = str(input("WHAT JOIN??\n"))
+                                table_inner = str(input("WHAT THE TABLE OF JOIN??\n"))
+                                on = str(input("WHAT THE 'ON' ON JOIN??\n"))
+                                order = str(input("DO YOU WANT ORDER BY?[Y/N]\n"))
+                                if order in 'Yy':
+                                    table_order = str(input("WHAT THE ROW OF ORDER??\n"))
+                                    self.query(self.select(table_selection, expression, join=join,
+                                                        table_inner=table_inner, on=on, order=table_order))
+                                else:
+                                    self.query(self.select(table_selection, expression, join=join,
+                                                        table_inner=table_inner, on=on))
                             self.query(self.select(table_selection, expression))
                             print('-'*16)
                     except Exception as erro:
@@ -247,9 +265,4 @@ class Connect:
                     print("Archive Created")
             except ValueError:
                 print("BYE!")
-                break
-            
-if __name__ == '__main__':
-    # passwd = input("PASSWORD:\n")
-    b1 = Connect("Udvf100%")
-    b1.menu()                                        
+                break                                  

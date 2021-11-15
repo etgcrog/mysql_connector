@@ -1,6 +1,7 @@
 import mysql.connector
 import time
 
+
 class Connect:
     def __init__(self, password, user='root', database='sys', host="127.0.0.1"):
         """[summary]
@@ -204,7 +205,7 @@ class Connect:
                         try:
                             already = str(input("DO YOU HAVE ALREADY DATABASE? [Y/N]\n"))
                             if already in 'Yy':
-                                name_base = str(input("WHTA WILL BE THE DATABASE NAME?\n"))
+                                name_base = str(input("WHAT WILL BE THE DATABASE NAME?\n"))
                                 self.database = f'{name_base}'
                                 n_table_name = 0
                                 with open('create_database.sql', 'r') as file:
@@ -239,5 +240,5 @@ class Connect:
             
 if __name__ == '__main__':
     # passwd = input("PASSWORD:\n")
-    b1 = Connect("Udvf100%")
+    b1 = Connect("Udvf100%", database="Produtos")
     b1.menu()                                        

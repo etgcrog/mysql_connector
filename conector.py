@@ -76,17 +76,19 @@ class Connect:
         print(f"INSERT INTO {table}{features} VALUES ({value})") #REPARAR
         return(f"INSERT INTO {table}{features} VALUES ({value})")    
     
-    def select(self, table, features, join=None, where=None, table_inner=None, on=None, order=None):
-        if join in ["JOIN", "INNER JOIN", "RIGHT JOIN"]:
+    def select(self, table, features, join=None, where=None, table_inner=None, on=None, group= None, having=None, order=None):
+        if order and join and not group:
             print('-'*40)
-            return f"SELECT {features} FROM {table} {join} {table_inner} ON {on}"
-        elif order and join:
-            print('-'*40)
+            print(f"SELECT {features} FROM {table} {join} {table_inner} ON {on} ORDER BY {order}")
             return f"SELECT {features} FROM {table} {join} {table_inner} ON {on} ORDER BY {order}"
-        elif where:
+        elif join and group and order:
             print('-'*40)
-            return f"SELECT {features} FROM {table} WHERE {where}"
-        else:
+            print(f"SELECT {features} FROM {table} {join} {table_inner} ON {on} GROUP BY {group} ORDER BY {order}")
+            return f"SELECT {features} FROM {table} {join} {table_inner} ON {on} GROUP BY {group} ORDER BY {order}"
+        elif join and group and having:
+            print(f"SELECT {features} FROM {table} {join} {table_inner} ON {on} GROUP BY {group} HAVING {having}")
+            return f"SELECT {features} FROM {table} {join} {table_inner} ON {on} GROUP BY {group} HAVING {having}"
+        elif not join and not where and not group:
             print('-'*16)
             return f"SELECT {features} FROM {table}"
     
@@ -165,27 +167,42 @@ class Connect:
                         """
                         table_selection = str(input("WHICH TABLE DO YOU WANT TO SELECT?\n"))
                         expression = str(input("TYPE THE EXPRESSION?\n"))
-                        have_where = str(input("YOUR SELECT HAVE THE WHERE?[Y/N]\n"))
-                        have_join = str(input("YOUR SELECT HAVE THE JOIN?[Y/N]\n"))
+                        
+                        have_where = str(input("YOUR SELECT HAVE THE WHERE?[Y/N]?\n"))
+                        have_join = str(input("YOUR SELECT HAVE THE JOIN?[Y/N]?\n"))
+                        have_group = str(input("YOUR SELECT HAVE THE GROUP BY?[Y/N]?\n"))
+                        have_having = str(input("YOUR SELECT HAVE THE HAVING GROUP BY?[Y/N]?\n"))
+                        order = str(input("DO YOU WANT ORDER BY?[Y/N]\n"))
+                        
                         if have_where in 'Yy':
                             where = str(input("TYPE THE WHERE?\n"))
                             self.query(self.select(table_selection, expression, where=where))
                             print('-'*40)
                         if have_where in 'Nn':
                             if have_join in 'Yy':
-                                join = str(input("WHAT JOIN??\n"))
-                                table_inner = str(input("WHAT THE TABLE OF JOIN??\n"))
-                                on = str(input("WHAT THE 'ON' ON JOIN??\n"))
-                                order = str(input("DO YOU WANT ORDER BY?[Y/N]\n"))
-                                if order in 'Yy':
-                                    table_order = str(input("WHAT THE ROW OF ORDER??\n"))
+                                if have_group in 'Yy':
+                                    join = str(input("WHAT JOIN??\n"))
+                                    table_inner = str(input("WHAT THE TABLE OF JOIN??\n"))
+                                    on = str(input("WHAT THE 'ON' ON JOIN??\n"))
+                                    group = str(input("GROUP BY FOR?\n"))
+                                    
+                                    if have_having in 'Yy':
+                                        having_name = str(input("WHAT THE HAVING OF GROUP??\n"))
+                                        self.query(self.select(table_selection, expression, join=join,
+                                                            table_inner=table_inner, on=on, group=group,
+                                                            having=having_name))
+                                    if order in 'Yy':
+                                        table_order = str(input("WHAT THE ROW OF ORDER??\n"))
+                                        self.query(self.select(table_selection, expression, join=join,
+                                                            table_inner=table_inner, on=on, group=group,
+                                                            order=table_order))
+                                elif order in "Nn" and have_having in 'Yy':
                                     self.query(self.select(table_selection, expression, join=join,
-                                                        table_inner=table_inner, on=on, order=table_order))
-                                else:
-                                    self.query(self.select(table_selection, expression, join=join,
-                                                        table_inner=table_inner, on=on))
+                                                        table_inner=table_inner, on=on, group=group))               
+                                elif have_join in 'Nn':
+                                    self.query(self.select(table_selection, expression))
                             self.query(self.select(table_selection, expression))
-                            print('-'*16)
+                            print('-'*40)
                     except Exception as erro:
                         print(erro)
                     
